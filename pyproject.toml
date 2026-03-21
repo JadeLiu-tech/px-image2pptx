@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "px-image2pptx"
+version = "0.1.0"
+description = "Convert static images to editable PowerPoint slides — OCR, inpaint, reconstruct"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "pxGenius", email = "px@pxgenius.dev"},
+]
+keywords = ["image", "pptx", "powerpoint", "ocr", "inpainting", "slide", "presentation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Office/Business",
+]
+dependencies = [
+    "Pillow>=10.0",
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+    "python-pptx>=0.6.21",
+]
+
+[project.optional-dependencies]
+ocr = ["paddleocr>=3.0", "paddlepaddle>=3.0"]
+inpaint = ["simple-lama-inpainting>=0.1.0", "torch>=2.0"]
+all = ["px-image2pptx[ocr,inpaint]"]
+dev = ["pytest>=7.0", "px-image2pptx[all]"]
+
+[project.scripts]
+px-image2pptx = "px_image2pptx.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/pxgenius/px-image2pptx"
+Issues = "https://github.com/pxgenius/px-image2pptx/issues"
+
+[tool.setuptools.packages.find]
+include = ["px_image2pptx*"]
