@@ -5,7 +5,7 @@
 
 Convert static images to editable PowerPoint slides. OCR detects text, classical CV builds a text mask, LAMA inpaints the background clean, and python-pptx reconstructs everything as individually editable text boxes over the restored background.
 
-**I also hosted a browser tool:** [pxGenius.ai](https://pxgenius.ai)
+**Demo:** [Hugging Face Space](https://huggingface.co/spaces/pxGenius/image2pptx) | **Browser tool:** [pxGenius.ai](https://pxgenius.ai)
 - **Free mode** — runs entirely in-browser with ONNX models, no download needed. Includes a built-in slide editor for repositioning text boxes, adjusting fonts, and fine-tuning the result before exporting.
 - **AI mode** — enhanced accuracy powered by Gemini, affordable per-use pricing
 
