@@ -74,7 +74,7 @@ Each pair shows the **original image** (left) and the **reconstructed PPTX previ
 |-------|-------------------|
 | ![](examples/image_bad1_input.png) | ![](examples/image_bad1_preview.png) |
 
-**Dense chart with axis labels** — The bar chart has text tightly integrated with the visual data (axis ticks, legend labels sitting on colored bars). Removing text here also removes parts of the chart structure. LAMA fills in the gaps, but the reconstructed chart loses some bars and axis lines. This is a fundamental limitation: when text *is* the data, removing it destroys information.
+**Dense chart with many labels** — The bar chart has many small OCR regions crowded together (axis ticks, legend labels, percentages). The line grouping logic over-merges nearby labels into wider text boxes, and positioning becomes inaccurate when many detections compete in tight spaces. This is a common failure mode for data-dense charts where labels are small and closely packed.
 
 | Input | Reconstructed PPTX |
 |-------|-------------------|
