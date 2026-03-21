@@ -41,9 +41,6 @@ def run_ocr(image_path: str | Path, lang: str = "ch") -> list[dict]:
         - confidence: float
         - bbox: {"x1": int, "y1": int, "x2": int, "y2": int}
     """
-    import os
-    os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
-
     PaddleOCR = _ensure_paddleocr()
 
     ocr = PaddleOCR(
