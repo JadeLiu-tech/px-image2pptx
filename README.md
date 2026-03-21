@@ -68,7 +68,7 @@ Each pair shows the **original image** (left) and the **reconstructed PPTX previ
 
 ### Challenging
 
-**Text overlapping photos** — The bold text ("362 MILES") sits directly on top of a photo of a car dashboard. LAMA must hallucinate the missing dashboard pixels behind the text, which produces visible artifacts. The inpainting is plausible but not perfect — fine details like the navigation screen and road markings are lost under the reconstructed area.
+**Very thick/large fonts** — The bold text ("362 MILES") uses an unusually thick, oversized font that exceeds the standard mask dilation range. The default parameters are tuned for typical slide text sizes, so extra-large or decorative fonts may not be fully covered by the dilated mask, leaving partial ink artifacts in the inpainted background.
 
 | Input | Reconstructed PPTX |
 |-------|-------------------|
