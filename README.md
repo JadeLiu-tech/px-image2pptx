@@ -42,7 +42,7 @@ flowchart LR
 
 Each pair shows the **original image** (left) and the **reconstructed PPTX preview** (right). Blue-highlighted regions are editable text boxes placed over the inpainted background.
 
-### Works well
+### Examples
 
 **Photo slide with text on solid/flat regions** — Text sits on a plain beige background separate from the photos. LAMA cleanly inpaints the flat area, and photos are preserved untouched because the OCR-guided mask only targets confirmed text regions.
 
@@ -68,7 +68,7 @@ Each pair shows the **original image** (left) and the **reconstructed PPTX previ
 |-------|-------------------|
 | ![](examples/texture_good3_input.png) | ![](examples/texture_good3_preview.png) |
 
-### Challenging
+### Challenging cases
 
 **Very thick/large fonts** — The bold text ("362 MILES") uses an unusually thick, oversized font that exceeds the standard mask dilation range. The default parameters are tuned for typical slide text sizes, so extra-large or decorative fonts may not be fully covered by the dilated mask, leaving partial ink artifacts in the inpainted background.
 
