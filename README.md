@@ -40,7 +40,7 @@ flowchart LR
 
 ## Examples
 
-Each pair shows the **original image** (left) and the **reconstructed PPTX preview** (right). Blue-highlighted regions are editable text boxes placed over the inpainted background.
+Each pair shows the **original image** (left) and the **reconstructed PPTX preview** (right). All text in the output is editable.
 
 ### Examples
 
