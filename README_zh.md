@@ -95,7 +95,7 @@ flowchart LR
 ## 安装
 
 ```bash
-git clone https://github.com/pxgenius/px-image2pptx.git
+git clone https://github.com/JadeLiu-tech/px-image2pptx.git
 cd px-image2pptx
 pip install -e ".[all]"
 ```

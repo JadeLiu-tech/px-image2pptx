@@ -95,7 +95,7 @@ Each pair shows the **original image** (left) and the **reconstructed PPTX previ
 ## Installation
 
 ```bash
-git clone https://github.com/pxgenius/px-image2pptx.git
+git clone https://github.com/JadeLiu-tech/px-image2pptx.git
 cd px-image2pptx
 pip install -e ".[all]"
 ```
@@ -298,7 +298,7 @@ Tests use `examples/chart_good1.png` and cover:
 ## Contributing
 
 ```bash
-git clone https://github.com/pxgenius/px-image2pptx.git
+git clone https://github.com/JadeLiu-tech/px-image2pptx.git
 cd px-image2pptx
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
