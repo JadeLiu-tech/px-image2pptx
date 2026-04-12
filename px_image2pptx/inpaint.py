@@ -24,20 +24,17 @@ def _ensure_lama():
         ) from None
 
 
-def inpaint(
-    image: np.ndarray,
-    mask: np.ndarray,
-) -> np.ndarray:
-    """Inpaint masked regions of an image using LAMA.
+_cached_model = None
+_cached_device = None
 
-    Args:
-        image: RGB numpy array (H, W, 3), uint8.
-        mask: Grayscale numpy array (H, W), uint8. 255 = inpaint.
 
-    Returns:
-        Inpainted RGB numpy array (H, W, 3), uint8.
-    """
-    torch, download_model, LAMA_MODEL_URL, prepare_img_and_mask = _ensure_lama()
+def _get_model():
+    """Return the cached LAMA model, loading it on first call."""
+    global _cached_model, _cached_device
+    if _cached_model is not None:
+        return _cached_model, _cached_device
+
+    torch, download_model, LAMA_MODEL_URL, _ = _ensure_lama()
 
     if torch.backends.mps.is_available():
         device = torch.device("mps")
@@ -51,14 +48,58 @@ def inpaint(
     model.eval()
     model.to(device)
 
-    pil_image = Image.fromarray(image)
-    pil_mask = Image.fromarray(mask)
+    _cached_model = model
+    _cached_device = device
+    return model, device
+
+
+def inpaint(
+    image: np.ndarray,
+    mask: np.ndarray,
+    max_size: int | None = None,
+) -> np.ndarray:
+    """Inpaint masked regions of an image using LAMA.
+
+    Args:
+        image: RGB numpy array (H, W, 3), uint8.
+        mask: Grayscale numpy array (H, W), uint8. 255 = inpaint.
+        max_size: If set, downscale the longer edge to this many pixels
+            before LAMA inference, then upscale the result back.
+            Reduces memory and compute for large images.
+
+    Returns:
+        Inpainted RGB numpy array (H, W, 3), uint8, same size as input.
+    """
+    _, _, _, prepare_img_and_mask = _ensure_lama()
+    import torch
+
+    model, device = _get_model()
+
+    orig_h, orig_w = image.shape[:2]
+    scaled = False
+
+    if max_size and max(orig_h, orig_w) > max_size:
+        scale = max_size / max(orig_h, orig_w)
+        new_w = round(orig_w * scale)
+        new_h = round(orig_h * scale)
+        pil_image = Image.fromarray(image).resize((new_w, new_h), Image.LANCZOS)
+        pil_mask = Image.fromarray(mask).resize((new_w, new_h), Image.NEAREST)
+        scaled = True
+    else:
+        pil_image = Image.fromarray(image)
+        pil_mask = Image.fromarray(mask)
+
     img_t, mask_t = prepare_img_and_mask(pil_image, pil_mask, device)
 
     with torch.inference_mode():
         inpainted = model(img_t, mask_t)
         result = inpainted[0].permute(1, 2, 0).detach().cpu().numpy()
         result = np.clip(result * 255, 0, 255).astype(np.uint8)
+
+    if scaled:
+        result = np.array(
+            Image.fromarray(result).resize((orig_w, orig_h), Image.LANCZOS)
+        )
 
     return result
 

@@ -27,6 +27,22 @@ def _ensure_paddleocr():
         ) from None
 
 
+_ocr_cache: dict[str, Any] = {}
+
+
+def _get_ocr(lang: str):
+    """Return a cached PaddleOCR instance for the given language."""
+    if lang not in _ocr_cache:
+        PaddleOCR = _ensure_paddleocr()
+        _ocr_cache[lang] = PaddleOCR(
+            lang=lang,
+            use_textline_orientation=False,
+            use_doc_orientation_classify=False,
+            use_doc_unwarping=False,
+        )
+    return _ocr_cache[lang]
+
+
 def run_ocr(image_path: str | Path, lang: str = "ch") -> list[dict]:
     """Run PaddleOCR on an image and return structured text regions.
 
@@ -41,14 +57,7 @@ def run_ocr(image_path: str | Path, lang: str = "ch") -> list[dict]:
         - confidence: float
         - bbox: {"x1": int, "y1": int, "x2": int, "y2": int}
     """
-    PaddleOCR = _ensure_paddleocr()
-
-    ocr = PaddleOCR(
-        lang=lang,
-        use_textline_orientation=False,
-        use_doc_orientation_classify=False,
-        use_doc_unwarping=False,
-    )
+    ocr = _get_ocr(lang)
     results = list(ocr.predict(str(image_path)))
 
     regions = []

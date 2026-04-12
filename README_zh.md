@@ -90,7 +90,7 @@ flowchart LR
 - **文字排版**：每个 OCR 检测结果生成一个左对齐文本框。原始的居中、两端对齐等格式不会被重建。
 - **亮色文字在深色背景上**：经典文字掩码检测深色墨迹。反色方案（白字黑底）下掩码退化为矩形边界框。
 - **WebP 输入**：PaddleOCR (v3.x) 不支持 WebP。请先转换为 PNG/JPG。
-- **超大图片**：LAMA 修复时间随分辨率增长。长边超过 ~4000px 的图片可能需要数分钟。
+- **超大图片**：LAMA 修复时间随分辨率增长。长边超过 ~4000px 的图片可能较慢，使用 `--max-inpaint-size 2048` 限制 LAMA 输入分辨率。
 
 ## 安装
 
@@ -155,6 +155,7 @@ px-image2pptx slide.png -o output.pptx --work-dir ./debug/
 | `--min-font` | `8` | 最小字号（磅） |
 | `--max-font` | `72` | 最大字号（磅） |
 | `--skip-inpaint` | | 跳过 LAMA 修复 |
+| `--max-inpaint-size` | | 修复前将长边缩放至 N px（如 2048），加速大图处理 |
 | `--work-dir` | | 中间文件目录 |
 
 ## 模型
@@ -169,15 +170,19 @@ px-image2pptx slide.png -o output.pptx --work-dir ./debug/
 
 ## 性能
 
+PaddleOCR 和 LAMA 模型在首次运行后缓存在内存中。同一进程内的后续转换（如通过 Gradio 应用或 Python API）跳过模型加载。
+
 在 MacBook Pro (M1 Pro) 上测试：
 
-| 步骤 | 耗时 | 模型 |
-|------|------|------|
-| OCR (PaddleOCR PP-OCRv5) | 2-5s | 165 MB |
-| 文字掩码 + 裁剪 | 1-3s | 无（经典 CV） |
-| 修复 (LAMA) | 4-8s | 196 MB |
-| PPTX 组装 | <0.2s | 无 |
-| **合计** | **8-16s** | **~370 MB** |
+| 步骤 | 首次耗时 | 缓存后耗时 | 模型 |
+|------|----------|-----------|------|
+| OCR (PaddleOCR PP-OCRv5) | 2-5s | 1-3s | 165 MB |
+| 文字掩码 + 裁剪 | 1-3s | 1-3s | 无（经典 CV） |
+| 修复 (LAMA) | 4-8s | 3-6s | 196 MB |
+| PPTX 组装 | <0.2s | <0.2s | 无 |
+| **合计** | **8-16s** | **5-12s** | **~370 MB** |
+
+对于超大图片，使用 `--max-inpaint-size 2048` 减少 LAMA 推理时间。
 
 ## 测试
 

@@ -56,6 +56,9 @@ examples:
                         help="Maximum font size in points (default: 72)")
     parser.add_argument("--skip-inpaint", action="store_true",
                         help="Skip LAMA inpainting (use original or solid bg)")
+    parser.add_argument("--max-inpaint-size", type=int, default=None,
+                        help="Downscale longer edge to N px before inpainting "
+                             "(e.g. 2048). Reduces time for large images.")
     parser.add_argument("--work-dir", default=None,
                         help="Directory for intermediate files")
     return parser.parse_args(argv)
@@ -77,6 +80,7 @@ def main(argv=None):
         min_font=args.min_font,
         max_font=args.max_font,
         skip_inpaint=args.skip_inpaint,
+        max_inpaint_size=args.max_inpaint_size,
         work_dir=args.work_dir,
     )
     elapsed = time.time() - t0

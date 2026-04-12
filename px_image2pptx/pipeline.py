@@ -29,6 +29,7 @@ def image_to_pptx(
     min_font: int = 8,
     max_font: int = 72,
     skip_inpaint: bool = False,
+    max_inpaint_size: int | None = None,
     work_dir: str | Path | None = None,
 ) -> dict:
     """Convert a static image to an editable PPTX.
@@ -44,6 +45,8 @@ def image_to_pptx(
         min_font: Minimum font size in points.
         max_font: Maximum font size in points.
         skip_inpaint: If True, skip inpainting (use original as background).
+        max_inpaint_size: If set, downscale the longer edge to this many
+            pixels before LAMA inpainting. Reduces time for large images.
         work_dir: Directory for intermediate files (default: temp dir).
 
     Returns:
@@ -96,7 +99,7 @@ def image_to_pptx(
         from px_image2pptx.inpaint import inpaint
 
         image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-        result = inpaint(image_rgb, dilated_mask)
+        result = inpaint(image_rgb, dilated_mask, max_size=max_inpaint_size)
 
         if save_intermediates:
             bg_path = str(wdir / "background.png")

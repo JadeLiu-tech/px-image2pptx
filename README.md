@@ -90,7 +90,7 @@ Each pair shows the **original image** (left) and the **reconstructed PPTX previ
 - **Text layout**: Each OCR detection becomes a flat, left-aligned text box. The original may have centered text, justified paragraphs, or multi-line formatting that is not reconstructed.
 - **Light text on dark backgrounds**: The classical textmask detects dark ink on light backgrounds. For inverted color schemes (white text on black), the textmask misses the text pixels. OCR still detects the text, but the mask falls back to bounding-box rectangles instead of tight ink outlines, which can produce blockier inpainting.
 - **WebP input**: PaddleOCR (v3.x) does not support WebP images. Convert to PNG/JPG before processing.
-- **Very large images**: LAMA inpainting time scales with image resolution. Images above ~4000px on the long side can take minutes. Consider downscaling first for faster processing.
+- **Very large images**: LAMA inpainting time scales with image resolution. Images above ~4000px on the long side can be slow. Use `--max-inpaint-size 2048` to cap the resolution sent to LAMA.
 
 ## Installation
 
@@ -155,6 +155,7 @@ px-image2pptx slide.png -o output.pptx --work-dir ./debug/
 | `--min-font` | `8` | Minimum font size in points |
 | `--max-font` | `72` | Maximum font size in points |
 | `--skip-inpaint` | | Skip LAMA inpainting |
+| `--max-inpaint-size` | | Downscale longer edge to N px before inpainting (e.g. 2048) |
 | `--work-dir` | | Directory for intermediate files |
 
 ## Python API
@@ -167,10 +168,11 @@ from px_image2pptx import image_to_pptx
 report = image_to_pptx(
     "slide.png",
     "output.pptx",
-    lang="auto",         # auto-detect language
-    sensitivity=16,      # textmask sensitivity
-    dilation=12,         # textmask dilation
-    skip_inpaint=False,  # set True for solid-bg slides
+    lang="auto",              # auto-detect language
+    sensitivity=16,           # textmask sensitivity
+    dilation=12,              # textmask dilation
+    skip_inpaint=False,       # set True for solid-bg slides
+    max_inpaint_size=None,    # e.g. 2048 to cap LAMA input resolution
 )
 ```
 
@@ -273,15 +275,19 @@ Models are downloaded automatically on first use (~370 MB total).
 
 ## Performance
 
+Both PaddleOCR and LAMA models are cached in memory after the first run. Repeated conversions in the same process (e.g. via the Gradio app or Python API) skip model loading entirely.
+
 Tested on a MacBook Pro (M1 Pro):
 
-| Step | Time | Model |
-|------|------|-------|
-| OCR (PaddleOCR PP-OCRv5) | 2-5s | 165 MB |
-| Textmask + clip | 1-3s | None (classical CV) |
-| Inpaint (LAMA) | 4-8s | 196 MB |
-| PPTX assembly | <0.2s | None |
-| **Total** | **8-16s** | **~370 MB** |
+| Step | Time (first run) | Time (cached) | Model |
+|------|-------------------|---------------|-------|
+| OCR (PaddleOCR PP-OCRv5) | 2-5s | 1-3s | 165 MB |
+| Textmask + clip | 1-3s | 1-3s | None (classical CV) |
+| Inpaint (LAMA) | 4-8s | 3-6s | 196 MB |
+| PPTX assembly | <0.2s | <0.2s | None |
+| **Total** | **8-16s** | **5-12s** | **~370 MB** |
+
+For very large images, use `--max-inpaint-size 2048` to reduce LAMA inference time.
 
 ## Testing
 
