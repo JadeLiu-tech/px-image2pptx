@@ -34,7 +34,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-ocr = ["paddleocr>=3.0", "paddlepaddle>=3.0"]
+ocr = ["paddleocr>=3.0", "paddlepaddle>=3.0,!=3.3.0"]
 inpaint = ["simple-lama-inpainting>=0.1.0", "torch>=2.0"]
 all = ["px-image2pptx[ocr,inpaint]"]
 dev = ["pytest>=7.0", "px-image2pptx[all]"]

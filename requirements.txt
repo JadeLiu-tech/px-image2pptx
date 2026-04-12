@@ -1,0 +1,10 @@
+Pillow>=10.0
+numpy>=1.24
+opencv-python-headless>=4.8
+python-pptx>=0.6.21
+paddleocr>=3.0
+paddlepaddle>=3.0,!=3.3.0
+simple-lama-inpainting>=0.1.0
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.0
+gradio>=4.0
